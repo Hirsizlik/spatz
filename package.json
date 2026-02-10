@@ -4,8 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prestart": "npm run build:dev",
     "start": "node ./dist/server.js",
-    "build": "npx webpack && npx webpack --config ./webpack.client.js",
+    "build:dev": "npx webpack --mode development",
+    "build:prod": "npx webpack --mode production",
     "lint": "eslint ."
   },
   "dependencies": {
