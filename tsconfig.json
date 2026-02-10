@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": true,
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "target": "es2022",
+    "module": "nodenext",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "moduleResolution": "nodenext"
+  }
+}
