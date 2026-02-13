@@ -10,7 +10,7 @@ const app = express();
 app.engine('ejs', ejs.renderFile);
 app.set('view engine', 'ejs');
 app.set('views', path.join(import.meta.dirname, '../views'));
-app.use(express.static('public'));
+app.use(express.static(path.join(import.meta.dirname, '../public')));
 
 app.get('/', (req, res) => {
   const content = renderToString(<App />);
