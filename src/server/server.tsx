@@ -17,6 +17,13 @@ app.get('/', (req, res) => {
   res.render('index', { content });
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log('Server runs on Port 3000');
+});
+
+process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    server.close(() => {
+        console.log('HTTP server closed');
+    });
 });
