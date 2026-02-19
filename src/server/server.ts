@@ -1,9 +1,11 @@
 import express from 'express';
-import React from 'react';
-import { renderToString } from 'react-dom/server';
-import App from '../client/App.tsx';
 import path from 'path';
 import ejs from "ejs"; // for bundling ejs
+import session from 'express-session';
+import * as env from './env.ts';
+import render_server from './render-server.tsx';
+
+import { handleCallback, redirectToSpotify } from './spotify.ts';
 
 const app = express();
 
@@ -12,13 +14,26 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(import.meta.dirname, '../views'));
 app.use(express.static(path.join(import.meta.dirname, '../public')));
 
+app.use(session({
+    secret: env.getSessionSecret(),
+    resave: false,
+    saveUninitialized: true,
+}));
+
 app.get('/', (req, res) => {
-  const content = renderToString(<App />);
-  res.render('index', { content });
+    render_server(res);
+});
+
+app.get('/spotify-login', (req, res) => {
+    redirectToSpotify(res);
+});
+
+app.get(env.getSpotifyCallbackUriPath(), async (req, res) => {
+    await handleCallback(req, res);
 });
 
 const server = app.listen(3000, () => {
-  console.log('Server runs on Port 3000');
+    console.log('Server runs on Port 3000');
 });
 
 process.on('SIGTERM', () => {
