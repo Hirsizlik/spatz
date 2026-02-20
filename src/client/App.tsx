@@ -1,5 +1,5 @@
 import React from 'react';
-import { InitialData } from '../shared/spotifyData.ts';
+import type { InitialData } from '../shared/spotifyData.d.ts';
 
 type AppProps = {
   initialData: InitialData | null,
@@ -16,6 +16,23 @@ export default function App({initialData}: AppProps) {
       </div>
     );
   } else {
-    return <div>Logged in as: <span>{initialData.profile.name}</span></div>;
+    let image = null;
+    const p = initialData.profile;
+    for (const i of p.images) {
+      image = <img src={i.url} height={i.height ?? 200} width={i.width ?? 200}/>;
+    }
+
+    if (!image) {
+      image = <span>No Image</span>;
+    }
+
+    return (
+      <div>
+        <div>Logged in as: {p.display_name}</div>
+        <div>ID: {p.id}</div>
+        <div>{image}</div>
+        <div>Country: {p.country}</div>
+      </div>
+    );
   }
 };

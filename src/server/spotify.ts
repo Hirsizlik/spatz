@@ -2,6 +2,7 @@ import type { Request, Response } from "express-serve-static-core";
 import crypto from 'node:crypto';
 import * as env from './env.ts';
 import querystring from 'node:querystring';
+import { Token, getToken } from './spotifyApi.ts';
 
 const clientId = env.getSpotifyClientId();
 const clientSecret = env.getSpotifyClientSecret();
@@ -15,14 +16,6 @@ declare module 'express-session' {
   interface SessionData {
     token: Token;
   }
-}
-type Token = {
-    accessToken: string,
-    tokenType: string,
-    expiresInSec: number,
-    refreshToken: string,
-    scope: string[],
-    createTimestamp: number
 }
 
 export function redirectToSpotify(req: Request, res: Response) {
@@ -49,28 +42,7 @@ export async function handleCallback(req: Request, res: Response) {
             })
         );
     } else {
-        const request = new Request("https://accounts.spotify.com/api/token", {
-            method: "POST",
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64'))
-            },
-            body: new URLSearchParams({
-                'code': req.query.code as string,
-                'redirect_uri': spotifyCallback,
-                'grant_type': 'authorization_code'
-            })
-        });
-
-        const response = await fetch(request).then(r => r.json());
-        req.session.token = {
-            accessToken: response.access_token,
-            tokenType: response.token_type,
-            expiresInSec: response.expires_in,
-            refreshToken: response.refresh_token,
-            scope: (response.scope as string).split(' '),
-            createTimestamp: Date.now()
-        } satisfies Token;
+        req.session.token = await getToken(req.query.code as string, clientId, clientSecret, spotifyCallback);
         res.redirect("/");
     }
 }
