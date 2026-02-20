@@ -11,7 +11,21 @@ type StoreType = {
 };
 const stateStore = {} as StoreType;
 
-export function redirectToSpotify(res: Response) {
+declare module 'express-session' {
+  interface SessionData {
+    token: Token;
+  }
+}
+type Token = {
+    accessToken: string,
+    tokenType: string,
+    expiresInSec: number,
+    refreshToken: string,
+    scope: string[],
+    createTimestamp: number
+}
+
+export function redirectToSpotify(req: Request, res: Response) {
     const state = crypto.randomBytes(16).toString('hex');
     stateStore[state] = { used: false };
     const scope = 'user-read-private user-read-email';
@@ -49,7 +63,14 @@ export async function handleCallback(req: Request, res: Response) {
         });
 
         const response = await fetch(request).then(r => r.json());
-        console.log(response);
-        res.send(response);
+        req.session.token = {
+            accessToken: response.access_token,
+            tokenType: response.token_type,
+            expiresInSec: response.expires_in,
+            refreshToken: response.refresh_token,
+            scope: (response.scope as string).split(' '),
+            createTimestamp: Date.now()
+        } satisfies Token;
+        res.redirect("/");
     }
 }

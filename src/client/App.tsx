@@ -1,16 +1,21 @@
 import React from 'react';
+import { InitialData } from '../shared/spotifyData.ts';
 
-const App = () => {
-  const handleSpotifyLogin = () => {
-    window.location.href = '/spotify-login';
-  };
-  return (
-    <div>
-      <h1>Spatz</h1>
-      <p>(Spotify Statz)</p>
-      <button onClick={handleSpotifyLogin}>Login to Spotify</button>
-    </div>
-  );
+type AppProps = {
+  initialData: InitialData | null,
+}
+
+export default function App({initialData}: AppProps) {
+  if (!initialData) {
+    const handleSpotifyLogin = () => {
+        window.location.href = '/spotify-login';
+    };
+    return (
+      <div>
+        <button onClick={handleSpotifyLogin}>Login to Spotify</button>
+      </div>
+    );
+  } else {
+    return <div>Logged in as: <span>{initialData.profile.name}</span></div>;
+  }
 };
-
-export default App;

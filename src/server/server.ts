@@ -20,13 +20,9 @@ app.use(session({
     saveUninitialized: true,
 }));
 
-app.get('/', (req, res) => {
-    render_server(res);
-});
+app.get('/', render_server);
 
-app.get('/spotify-login', (req, res) => {
-    redirectToSpotify(res);
-});
+app.get('/spotify-login', redirectToSpotify);
 
 app.get(env.getSpotifyCallbackUriPath(), async (req, res) => {
     await handleCallback(req, res);
