@@ -1,4 +1,4 @@
-import type {Profile} from '../shared/spotifyData.d.ts';
+import type { Profile, Playlist } from '../shared/spotifyData.d.ts';
 
 export type Token = {
     accessToken: string,
@@ -34,12 +34,30 @@ export async function getToken(code: string, clientId: string, clientSecret: str
     } satisfies Token;
 }
 
-export async function getProfile(accessToken: string): Promise<Profile> {
-    const request = new Request("https://api.spotify.com/v1/me", {
+function newGetRequest(url: string, accessToken: string) {
+    return new Request(url, {
         method: "GET",
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
     });
-    return await fetch(request).then(r => r.json());
+}
+
+function parse(r: Response) {
+    if (r.ok) {
+        return r.json();
+    } else {
+        return r.text().then(t => { throw new Error(`${r.status} ${t}`); });
+    }
+}
+
+export async function getProfile(accessToken: string): Promise<Profile> {
+    const request = newGetRequest("https://api.spotify.com/v1/me", accessToken);
+    return await fetch(request).then(parse);
+}
+
+export async function getUserPlaylists(accessToken: string): Promise<Playlist[]> {
+    const request = newGetRequest("https://api.spotify.com/v1/me/playlists", accessToken);
+    // TODO issue multiple requests if next is not null
+    return await fetch(request).then(parse).then(p => p.items);
 }

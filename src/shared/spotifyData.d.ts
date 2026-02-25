@@ -1,5 +1,6 @@
 export type InitialData = {
-    profile: Profile
+    profile: Profile,
+    playlists: Playlist[],
 }
 
 export type Image = {
@@ -14,3 +15,10 @@ export type Profile = {
     images: Image[],
     country: string,
 };
+
+export type Playlist = {
+    id: string,
+    name: string,
+    images: Image[],
+    public: boolean,
+}

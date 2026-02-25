@@ -7,10 +7,8 @@ import { Token, getToken } from './spotifyApi.ts';
 const clientId = env.getSpotifyClientId();
 const clientSecret = env.getSpotifyClientSecret();
 const spotifyCallback = env.getSpotifyCallbackUri();
-type StoreType = {
-    [state: string]: { used: boolean }
-};
-const stateStore = {} as StoreType;
+
+const stateStore = new Set<string>();
 
 declare module 'express-session' {
   interface SessionData {
@@ -20,8 +18,8 @@ declare module 'express-session' {
 
 export function redirectToSpotify(req: Request, res: Response) {
     const state = crypto.randomBytes(16).toString('hex');
-    stateStore[state] = { used: false };
-    const scope = 'user-read-private user-read-email';
+    stateStore.add(state);
+    const scope = 'user-read-private playlist-read-private';
 
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
@@ -35,13 +33,14 @@ export function redirectToSpotify(req: Request, res: Response) {
 
 export async function handleCallback(req: Request, res: Response) {
     const stateFromQuery = req.query.state as string;
-    if (!stateStore[stateFromQuery] || stateStore[stateFromQuery].used) {
+    if (!stateStore.has(stateFromQuery)) {
         res.redirect('/#' +
             querystring.stringify({
                 error: 'state_mismatch'
             })
         );
     } else {
+        stateStore.delete(stateFromQuery);
         req.session.token = await getToken(req.query.code as string, clientId, clientSecret, spotifyCallback);
         res.redirect("/");
     }

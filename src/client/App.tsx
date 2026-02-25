@@ -1,8 +1,12 @@
 import React from 'react';
-import type { InitialData } from '../shared/spotifyData.d.ts';
+import type { InitialData, Playlist } from '../shared/spotifyData.d.ts';
 
 type AppProps = {
   initialData: InitialData | null,
+}
+
+function Playlist(playlist: Playlist) {
+  return <div key={playlist.id}>{playlist.name}</div>;
 }
 
 export default function App({initialData}: AppProps) {
@@ -26,12 +30,17 @@ export default function App({initialData}: AppProps) {
       image = <span>No Image</span>;
     }
 
+    const playlists = initialData.playlists.map((p) => Playlist(p));
+
     return (
       <div>
         <div>Logged in as: {p.display_name}</div>
         <div>ID: {p.id}</div>
         <div>{image}</div>
         <div>Country: {p.country}</div>
+        <div>Playlists:
+        {playlists}
+        </div>
       </div>
     );
   }
