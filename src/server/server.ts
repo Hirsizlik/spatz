@@ -3,7 +3,7 @@ import path from 'path';
 import ejs from "ejs"; // for bundling ejs
 import session from 'express-session';
 import * as env from './env.ts';
-import render_server from './render-server.tsx';
+import { renderIndex, renderPlaylist } from './render-server.tsx';
 
 import { handleCallback, redirectToSpotify } from './spotify.ts';
 
@@ -20,7 +20,8 @@ app.use(session({
     saveUninitialized: true,
 }));
 
-app.get('/', render_server);
+app.get('/', renderIndex);
+app.get('/playlist/:playlistId', renderPlaylist);
 
 app.get('/spotify-login', redirectToSpotify);
 

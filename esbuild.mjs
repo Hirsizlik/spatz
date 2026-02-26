@@ -13,5 +13,11 @@ await esbuild.build({
 await esbuild.build({
   entryPoints: ['src/client/index.tsx'],
   bundle: true,
-  outfile: 'public/bundle.js',
+  outfile: 'public/bundle_index.js',
+});
+
+await esbuild.build({
+  entryPoints: ['src/client/playlist.tsx'],
+  bundle: true,
+  outfile: 'public/bundle_playlist.js',
 });

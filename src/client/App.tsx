@@ -19,9 +19,15 @@ function getClosestToSizeImage(images: Image[], prefHeight: number): Image | nul
 function Playlist(playlist: Playlist) {
   const i = getClosestToSizeImage(playlist.images, 200);
   if (i) {
-    return <div key={playlist.id}><img src={ i.url } height="200"/>{playlist.name}</div>;
+    return (
+    <div key={playlist.id}>
+      <a href={`/playlist/${playlist.id}`}>
+        <img src={ i.url } height="200"/>
+        {playlist.name}
+      </a>
+    </div>);
   } else {
-    return <div key={playlist.id}>{playlist.name}</div>;
+    return <div key={playlist.id}><a href={`/playlist/${playlist.id}`}>{playlist.name}</a></div>;
   }
 }
 

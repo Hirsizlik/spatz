@@ -22,3 +22,12 @@ export type Playlist = {
     images: Image[],
     public: boolean,
 }
+
+export type PlaylistItem = {
+    item: Track,
+}
+
+export type Track = {
+    id: string,
+    name: string
+}
