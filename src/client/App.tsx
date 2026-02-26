@@ -1,12 +1,28 @@
 import React from 'react';
-import type { InitialData, Playlist } from '../shared/spotifyData.d.ts';
+import type { InitialData, Playlist, Image } from '../shared/spotifyData.d.ts';
 
 type AppProps = {
   initialData: InitialData | null,
 }
 
+function getClosestToSizeImage(images: Image[], prefHeight: number): Image | null {
+  let closest: Image | null = null;
+  for (const i of images) {
+    if (!closest || (closest.height && i.height &&
+        (Math.abs(closest.height - prefHeight) > Math.abs(i.height - prefHeight)))) {
+      closest = i;
+    }
+  }
+  return closest;
+}
+
 function Playlist(playlist: Playlist) {
-  return <div key={playlist.id}>{playlist.name}</div>;
+  const i = getClosestToSizeImage(playlist.images, 200);
+  if (i) {
+    return <div key={playlist.id}><img src={ i.url } height="200"/>{playlist.name}</div>;
+  } else {
+    return <div key={playlist.id}>{playlist.name}</div>;
+  }
 }
 
 export default function App({initialData}: AppProps) {

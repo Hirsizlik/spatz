@@ -11,7 +11,6 @@ export default async function render(req: Request, res: Response) {
         const t = req.session.token.accessToken;
         const profile = await sapi.getProfile(t);
         const playlists = await sapi.getUserPlaylists(t);
-        console.log(playlists);
         initialData = {
             profile: profile,
             playlists: playlists,
